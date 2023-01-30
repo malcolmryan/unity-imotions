@@ -17,31 +17,75 @@ public class IMotions : MonoBehaviour
     public string hostname = "127.0.0.1";
     public int port = 8089;
 
-    void Start()
-    {
-        
-    }
+    public string sensorGroup = "Unity";
+    public string[] sensors = {"Milliseconds", "Seconds"};
+    public Dictionary<string, string> sensorValues;
 
-    void Update()
-    {
-        timer += Time.deltaTime;
+    private string naString = "na";
 
-        if (timer > period) {
-            timer -= period;
-            SendTime();
-            SendMarker();
+    public void OnEnable()
+    {
+        sensorValues = new Dictionary<string, string>();
+        // initialise all sensors to NA
+        for (int i = 0; i < sensors.Length; i++) 
+        {
+            sensorValues[sensors[i]] = naString;
         }
     }
 
-    private void SendTime() 
+    public void Update()
     {
-        string value1 = Convert.ToString(DateTime.Now.Millisecond);
-        string value2 = Convert.ToString(DateTime.Now.Second);
+        timer += Time.deltaTime;
+        if (timer >= period)
+        {
+            timer -= period;
+            
+            SetSensor("Milliseconds", DateTime.Now.Millisecond);
+            SetSensor("Seconds", DateTime.Now.Second);
+            SendSensors();
+        }
+    }
 
+    public void SetSensor(string sensor, string value)
+    {
+        if (!sensorValues.ContainsKey(sensor)) {
+            throw new ArgumentException($"Sensor {sensor} is not defined.", "sensor");
+        }
+        sensorValues[sensor] = value;
+    }
+
+    public void SetSensor(string sensor, int value)
+    {
+        SetSensor(sensor, Convert.ToString(value));
+    }
+
+    public void SetSensor(string sensor, float value)
+    {
+        SetSensor(sensor, Convert.ToString(value));
+    }
+
+    public void ResetSensor(string sensor) 
+    {
+        if (!sensorValues.ContainsKey(sensor)) {
+            throw new ArgumentException($"Sensor {sensor} is not defined.", "sensor");
+        }
+        sensorValues[sensor] = naString;
+    }
+
+    private void SendSensors() 
+    {
         // construct a UDP string with the above signals
         // The prefix "E" lets IMOTIONS know that this is a line graph type of input.
-        string UDPstring = "E;1;GenericInput;1;0.0;;;GenericInput;" + value1 + ";" + value2 + "\r\n";
-        SendUDPPacket(hostname, port, UDPstring, 1);
+
+        StringBuilder sb = new StringBuilder($"E;1;{sensorGroup};1;0.0;;;{sensorGroup}");
+
+        for (int i = 0; i < sensors.Length; i++) {
+            sb.Append(';');
+            sb.Append(sensorValues[sensors[i]]);
+        }
+        sb.Append("\r\n");
+
+        SendUDPPacket(hostname, port, sb.ToString(), 1);
     }
 
     private void SendMarker()
