@@ -12,17 +12,15 @@ using System.Net.Sockets;
 
 public class IMotions : MonoBehaviour
 {
-    private float timer = 0;
-    public float period = 1; // seconds
     public string hostname = "127.0.0.1";
     public int port = 8089;
 
-    public string sensorGroup = "Unity";    
+    public string eventID = "Unity";    
     public int version = 1;
     public string instance = "Default";
-    public string sample = "Sample";    
+    public string sampleID = "Sample";    
     public string[] sensors = {"Milliseconds", "Seconds"};
-    public Dictionary<string, string> sensorValues;
+    private Dictionary<string, string> sensorValues;
 
     private string naString = "na";
 
@@ -33,19 +31,6 @@ public class IMotions : MonoBehaviour
         for (int i = 0; i < sensors.Length; i++) 
         {
             sensorValues[sensors[i]] = naString;
-        }
-    }
-
-    public void Update()
-    {
-        timer += Time.deltaTime;
-        if (timer >= period)
-        {
-            timer -= period;
-            
-            SetSensor("Milliseconds", DateTime.Now.Millisecond);
-            SetSensor("Seconds", DateTime.Now.Second);
-            SendSensors();
         }
     }
 
@@ -90,7 +75,7 @@ public class IMotions : MonoBehaviour
         // 8: Sample Type = should match Sample ID in XML
         // 9... data fields   
 
-        StringBuilder sb = new StringBuilder($"E;1;{sensorGroup};{version};{instance};;;{sample}");
+        StringBuilder sb = new StringBuilder($"E;1;{eventID};{version};{instance};;;{sampleID}");
 
         // append values
         for (int i = 0; i < sensors.Length; i++) {
