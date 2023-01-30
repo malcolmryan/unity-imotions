@@ -17,7 +17,10 @@ public class IMotions : MonoBehaviour
     public string hostname = "127.0.0.1";
     public int port = 8089;
 
-    public string sensorGroup = "Unity";
+    public string sensorGroup = "Unity";    
+    public int version = 1;
+    public string instance = "Default";
+    public string sample = "Sample";    
     public string[] sensors = {"Milliseconds", "Seconds"};
     public Dictionary<string, string> sensorValues;
 
@@ -77,8 +80,19 @@ public class IMotions : MonoBehaviour
         // construct a UDP string with the above signals
         // The prefix "E" lets IMOTIONS know that this is a line graph type of input.
 
-        StringBuilder sb = new StringBuilder($"E;1;{sensorGroup};1;0.0;;;{sensorGroup}");
+        // 1: Type = 'E' - Sensor Event
+        // 2: Version = 1 - Version of the event string format
+        // 3: Source = sensor group (must match EventSource ID in XML)
+        // 4: Source Version = sensor version
+        // 5: Instance = which instance of this sensor (if there are two identical sensors) - This doesn't appear to be set
+        // 6: Timestamp (ms) = timestamp for data (should match iMotions timestamp)
+        // 7: Media Time = media timerstamp for data (value unclear)
+        // 8: Sample Type = should match Sample ID in XML
+        // 9... data fields   
 
+        StringBuilder sb = new StringBuilder($"E;1;{sensorGroup};{version};{instance};;;{sample}");
+
+        // append values
         for (int i = 0; i < sensors.Length; i++) {
             sb.Append(';');
             sb.Append(sensorValues[sensors[i]]);
@@ -94,7 +108,7 @@ public class IMotions : MonoBehaviour
 
         // construct a UDP string with the above signals
         // The prefix "M" lets IMOTIONS know that this is marker event.
-        string DiscreteTextEvent = "M;2;;;"+currentSecond+" Second;Marker Text with second counter "+currentSecond+";D;\r\n";
+        string DiscreteTextEvent = $"M;2;;;{currentSecond} Second;Marker Text with second counter {currentSecond};D;\r\n";
         SendUDPPacket(hostname, port, DiscreteTextEvent, 1);
     }
 

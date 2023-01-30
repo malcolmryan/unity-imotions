@@ -1,5 +1,5 @@
-  <EventSource Id="Unity" Version="1" Name="Unity">
-      <Sample Id="Unity" Name="Unity">
+  <EventSource Id="Unity" Version="1" Name="UnityXYZ">
+      <Sample Id="Sample" Name="SampleXYZ">
           <Field Id="Milliseconds" Range="Variable"></Field>
           <Field Id="Seconds" Range="Variable"></Field>
       </Sample>
