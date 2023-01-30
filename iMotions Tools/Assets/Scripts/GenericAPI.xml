@@ -1,0 +1,6 @@
+  <EventSource Id="GenericInput" Version="1" Name="GenericInput">
+      <Sample Id="GenericInput" Name="GenericInput">
+          <Field Id="Value1" Range="Variable"></Field>
+          <Field Id="Value2" Range="Variable"></Field>
+      </Sample>
+  </EventSource>
