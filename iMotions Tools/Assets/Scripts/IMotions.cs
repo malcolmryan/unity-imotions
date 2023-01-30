@@ -87,13 +87,41 @@ public class IMotions : MonoBehaviour
         SendUDPPacket(hostname, port, sb.ToString(), 1);
     }
 
-    private void SendMarker()
+    public void SendStartMarker(string description)
     {
-        int currentSecond = DateTime.Now.Second;
+        SendMarker('S', description);
+    }
+
+    public void SendEndMarker(string description)
+    {
+        SendMarker('E', description);
+    }
+
+    public void SendNextMarker(string description)
+    {
+        SendMarker('N', description);
+    }
+
+    public void SendDiscreteMarker(string description)
+    {
+        SendMarker('D', description);
+    }
+
+    private void SendMarker(char type, string description)
+    {
+        // Marker version 2
+        // 1: Type = 'M' - Marker Event
+        // 2: Version = 2
+        // 3: Elapsed time (optional)
+        // 4: Media time (optional)
+        // 5: Short text description
+        // 6: Long test description
+        // 7: Marker type - 'D' = Discrete, 'S' = Start segment, 'E' = End segment, 'N' = Next segment (auto end/start)
+        // 8: Scence Type (optional) - 'V' = Video, 'I' = Image
 
         // construct a UDP string with the above signals
         // The prefix "M" lets IMOTIONS know that this is marker event.
-        string DiscreteTextEvent = $"M;2;;;{currentSecond} Second;Marker Text with second counter {currentSecond};D;\r\n";
+        string DiscreteTextEvent = $"M;2;;;{description};{description};{type};\r\n";
         SendUDPPacket(hostname, port, DiscreteTextEvent, 1);
     }
 

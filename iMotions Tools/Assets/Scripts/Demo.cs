@@ -9,6 +9,16 @@ public class Demo : MonoBehaviour
     [SerializeField] private float period = 1;
     private float timer;
 
+    void Start() 
+    {
+        iMotions.SendStartMarker("Game");
+    }
+
+    void OnDestroy()
+    {
+        iMotions.SendEndMarker("Game");
+    }
+
     void Update()
     {
         timer += Time.deltaTime;
@@ -19,6 +29,7 @@ public class Demo : MonoBehaviour
             iMotions.SetSensor("Milliseconds", DateTime.Now.Millisecond);
             iMotions.SetSensor("Seconds", DateTime.Now.Second);
             iMotions.SendSensors();
+            iMotions.SendDiscreteMarker("Tick");
         }
     }
 }
