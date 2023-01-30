@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml;
 using UnityEngine;
 using UnityEditor;
 
@@ -26,5 +28,45 @@ public class iMotionsEditor : Editor
         
         EditorGUILayout.PropertyField(sensorsProp); 
         serializedObject.ApplyModifiedProperties();
+
+        if (GUILayout.Button("Write XML")) 
+        {
+            WriteXML(iMotions);
+        }
+    }
+
+//   <EventSource Id="Unity" Version="1" Name="UnityXYZ">
+//       <Sample Id="Sample" Name="SampleXYZ">
+//           <Field Id="Milliseconds" Range="Variable"></Field>
+//           <Field Id="Seconds" Range="Variable"></Field>
+//       </Sample>
+//   </EventSource>
+
+    private void WriteXML(IMotions iMotions)
+    {
+        string path = EditorUtility.SaveFilePanel("Save event source definition as XML",
+            "", $"{iMotions.eventID}.xml", "xml");
+
+        using (XmlTextWriter writer = new XmlTextWriter(new StreamWriter(path)))  
+        {  
+            writer.WriteStartElement("EventSource");
+            writer.WriteAttributeString("Id", iMotions.eventID);
+            writer.WriteAttributeString("Version", iMotions.version.ToString());
+            writer.WriteAttributeString("Name", iMotions.eventID);
+
+            writer.WriteStartElement("Sample");
+            writer.WriteAttributeString("Id", iMotions.sampleID);
+            writer.WriteAttributeString("Name", iMotions.sampleID);
+
+            for (int i = 0; i < iMotions.sensors.Length; i++) 
+            {
+                writer.WriteStartElement("Field");
+                writer.WriteAttributeString("Id", iMotions.sensors[i]);
+                writer.WriteAttributeString("Range", "Variable");
+                writer.WriteEndElement();                
+            }
+            writer.WriteEndElement();                
+            writer.WriteEndElement();                
+        } 
     }
 }

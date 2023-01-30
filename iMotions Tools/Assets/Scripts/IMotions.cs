@@ -60,7 +60,7 @@ public class IMotions : MonoBehaviour
         sensorValues[sensor] = naString;
     }
 
-    private void SendSensors() 
+    public void SendSensors() 
     {
         // construct a UDP string with the above signals
         // The prefix "E" lets IMOTIONS know that this is a line graph type of input.
